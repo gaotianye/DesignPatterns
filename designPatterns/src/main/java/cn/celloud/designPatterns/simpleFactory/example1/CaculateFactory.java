@@ -13,17 +13,23 @@ public class CaculateFactory {
 	}
 	
 	public static Caculate getInstance(String sign) throws Exception{
+		Caculate c = null;
 		switch (sign) {
 		case "+":
-			return new AddCaculate();
+			c = new AddCaculate();
+			break;
 		case "-":
-			return new SubtractCaculate();
+			c = new SubtractCaculate();
+			break;
 		case "*":
-			return new MultiplyCaculate();
+			c = new MultiplyCaculate();
+			break;
 		case "/":
-			return new DivideCaculate();
+			c = new DivideCaculate();
+			break;
 		default:
 			throw new Exception("请输入正确的符号!");
 		}
+		return c;
 	}
 }
