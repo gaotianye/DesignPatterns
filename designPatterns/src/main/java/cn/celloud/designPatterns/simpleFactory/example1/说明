@@ -1,0 +1,7 @@
+1、jdk1.8中switch使用字符串报错，所以此包中的代码考虑用jdk1.7
+
+2、jdk1.8解决方案：将type从原来的字符串改成枚举类型就可以
+       
+       参考：http://blog.csdn.net/zhaojw_420/article/details/53735879
+       
+3、maven中有个插件可以判断是否用jdk的不同版本？？？
