@@ -8,3 +8,11 @@
 是不同的，我们没有必要为迎合它而改动自己的接口，此时尽管处于开发的设计阶段，也可以
 考虑用适配器来解决接口不同的问题。
 4、本案例的适配器主要做  翻译的工具。
+5、在.NET中，有一个类库已经实现的、非常重要的适配器:DataAdapter
+  DataAdapter用作DataSet和数据源（mysql、oracle）之间的适配器以便索引和保存数据。
+  DataAdapter通过映射Fill（这更改了DataSet中的数据以便与数据源中的数据匹配）和
+  Update（这更改了数据源中的数据以便与DataSet中的数据匹配）来提供这一适配器。
+  
+      这数据源可能是来自SQL Server、Oracle、Mysql、Acess、DB2.这些数据在组织上可能
+      有不同之处，但是我们希望得到统一的DataSet（实质是XML数据），此时就用DataAdapter。
+      我们无需关注不同的数据库的细节，就可以灵活的使用数据。
