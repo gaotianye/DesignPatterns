@@ -1,0 +1,96 @@
+1、单例模式的范围：
+目前java里面实现的单例是一个虚拟机的范围。因为装载类的功能是虚拟机的，所以一个
+虚拟机在通过自己的ClassLoader装载饿汉式实现单例类的时候就会创建一个类的实例。
+
+这就意味着如果一个虚拟机里面有很多个ClassLoader，而且这些ClassLoader都
+装载某个类的话，就算这个类是单例，它也会产生很多个实例。
+
+当然，如果一个机器上有多个虚拟机，那么每个虚拟机里面都应该至少有一个这样类的实例，
+也就是说整个机器上就有很多个实例，更不会是单例了。
+
+2、代码：
+Singleton1类：饿汉式
+Singleton2类：懒汉式，线程不安全
+
+Singleton1的private static Singleton1 singleton = new Singleton1();
+和Singleton2中的private static Singleton2 singleton = null;
+
+虽然都用到了static，但是有本质区别的：
+1）Singleton1中的static出现的目的是为了单例。
+2）Singleton2中的static出现的目的是因为后边有类的方法（静态方法）使用到这个变量。
+
+Singleton3类：懒汉式，解决线程不安全问题。但是效率低
+
+Singleton4类：解决Singleton3的效率问题。
+	懒汉式，双重检查枷锁.但是会造成一个问题：有可能判断instance不为null时，
+            但是真实的却是instance引用的对象有可能还没有完成初始化
+
+Singleton5类：解决Singleton4的bug问题：
+参考：http://ifeve.com/double-checked-locking-with-delay-initialization/
+	instance = new Singleton();可分解成以下伪代码：
+		memory = allocate();   //1：分配对象的内存空间
+		ctorInstance(memory);  //2：初始化对象
+		instance = memory;     //3：设置instance指向刚分配的内存地址
+	但是由于2和3可能发生执行顺序颠倒，发生类似下面：
+		时间 	线程A 						线程B
+		t1 	A1：分配对象的内存空间 	
+		t2 	A3：设置instance指向内存空间 	
+		t3 								B1：判断instance是否为空
+		t4 								B2：由于instance不为null，线程B将访问instance引用的对象
+		t5 	A2：初始化对象 	
+		t6 	A4：访问instance引用的对象 	
+	将导致线程B在B1处判断出instance不为空，线程B接下来将访问instance引用的对象。此时，线程B将会访问到一个还未初始化的对象。
+
+解决思路：
+	1）不允许2和3重排序----基于volatile的双重检查锁定的解决方案（需要jdk5及以后的版本）
+		private volatile static Singleton5 singleton = null;
+		三行伪代码中的2和3之间的重排序，在多线程环境中将会被禁止.
+		还有另外一种解释：
+		被volatile修饰的变量的值，将不会被本地线程缓存，所有对该变量的读写都是直接操作共享内存，从而确保多线程能正确的处理该变量
+		
+		弊端：由于volatile关键字可能会屏蔽掉虚拟机中一些不必要的代码优化，所以运行效率并不是很高。因此，一般建议没有特别必要，不要使用。
+		
+	2）允许2和3重排序，但不允许其他线程“看到”这个重排序。----基于类初始化的解决方案
+		JVM在类的初始化阶段（即在Class被加载后，且被线程使用之前），会执行类的初始化。
+		在执行类的初始化期间，JVM会去获取一个锁。这个锁可以同步多个线程对同一个类的初始化。（饿汉式就是这么做的）
+		
+		代码参考：Singleton6---使用静态内部类。也被称为Initialization On Demand Holder idiom
+		实质是：允许“问题的根源”的三行伪代码中的2和3重排序，但不允许非构造线程（这里指线程B）“看到”这个重排序。
+
+3、用到的思想：
+1）延迟加载：以空间换时间:懒汉式
+	if(singleton==null){
+		singleton = new Singleton2();
+	}
+2）以时间换空间：饿汉式
+3）缓存：以空间换时间：懒汉式
+	private static Singleton2 singleton = null;
+	............
+	if(singleton==null){
+		singleton = new Singleton2();
+	}
+
+4、其他方式实现单例：
+1）缓存思想来实现单例
+2）Lazy initialization holder class---既能实现延迟加载，又能解决线程安全问题---内部类+多线程缺省同步锁
+	No1：采用静态初始化器的方式，由JVM控制 ，来保证线程安全。
+	No2：使用静态内部类，让类装载的时候不去初始化对象，当需要时，才会初始化。
+	
+	public class Singleton6 {
+		private Singleton6(){
+			
+		}
+		//静态的成员内部类，与外部实例没有绑定关系，只有被调用时，才会加载，实现了延迟加载
+		private static class SingletonHolder{
+			//JVM保证线程安全
+			private static Singleton6 singleton = new Singleton6();
+		}
+		public static Singleton6 getInstance(){
+			return SingletonHolder.singleton;
+		}
+	}
+3）使用枚举来实现单例
+	一个枚举元素，就是枚举的实例。
+	public enum Singleton {
+		singleton;
+	}
