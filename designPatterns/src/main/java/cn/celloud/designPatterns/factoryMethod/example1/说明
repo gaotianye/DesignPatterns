@@ -1,0 +1,4 @@
+添加新的导出格式时，还要修改ExportOperator类的switch方法。
+ExportOperator类的目的只有一个，执行export方法。
+
+解决思路：通过工厂方法
