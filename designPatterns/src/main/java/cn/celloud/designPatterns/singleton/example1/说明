@@ -30,6 +30,7 @@ Singleton4类：解决Singleton3的效率问题。
 
 Singleton5类：解决Singleton4的bug问题：
 参考：http://ifeve.com/double-checked-locking-with-delay-initialization/
+原文：http://www.infoq.com/cn/articles/double-checked-locking-with-delay-initialization
 	instance = new Singleton();可分解成以下伪代码：
 		memory = allocate();   //1：分配对象的内存空间
 		ctorInstance(memory);  //2：初始化对象
