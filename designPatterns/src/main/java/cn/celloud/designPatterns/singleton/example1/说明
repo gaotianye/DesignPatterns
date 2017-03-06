@@ -22,8 +22,11 @@ Singleton1的private static Singleton1 singleton = new Singleton1();
 Singleton3类：懒汉式，解决线程不安全问题。但是效率低
 
 Singleton4类：解决Singleton3的效率问题。
-	懒汉式，双重检查枷锁.但是会造成一个问题：有可能判断instance不为null时，
-            但是真实的却是instance引用的对象有可能还没有完成初始化
+	懒汉式，双重检查枷锁.但是会造成一个问题：
+ * 第1个线程：读取到instance不为null时，进入锁，然后继续判断instance不为null，创建实例对象，释放锁
+ * 第2个线程：读到if(singleton == null)，instance引用的对象还没有完成初始化，前面已经释放锁，
+ * 这个线程进入锁，再读if(singleton == null)，由于JVM等优化，可能会出现虽然已经释放锁，但是有可能
+ * 实例对象还没有创建成功。于是又创建了一次对象。
 
 Singleton5类：解决Singleton4的bug问题：
 参考：http://ifeve.com/double-checked-locking-with-delay-initialization/
