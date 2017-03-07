@@ -1,4 +1,4 @@
-package cn.celloud.designPatterns.abstractFactory.example4;
+package cn.celloud.designPatterns.abstractFactory.dao.example1;
 
 public class User {
 	private String username;
