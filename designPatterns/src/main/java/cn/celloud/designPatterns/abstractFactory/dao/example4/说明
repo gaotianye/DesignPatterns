@@ -1,0 +1,10 @@
+单用抽象工厂方法的弊端：
+一旦添加一个对象，那么至少要添加三个类，并且要修改三个类
+
+例如：扩展Product：
+
+增加类IProduct、SqlServerProduct、OracleProduct
+修改类AbstractFactory、SqlServerFactory、OracleFactory
+
+能否优化？---可以的。
+通过  简单工厂+抽象工厂
