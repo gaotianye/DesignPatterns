@@ -1,0 +1,5 @@
+使用工厂方法模式，改写DAO层
+
+有1个User类。
+有2个数据库：oracle、sqlserver
+让2个数据库都有1套自己的insert(User user)和getUser(int id)方法
